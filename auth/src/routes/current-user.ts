@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 
-import { currentUser } from '../middlewares';
+import { currentUser } from '@rg-ticketing/common';
 
 const router = Router();
 
