@@ -10,13 +10,13 @@ const start = async () => {
         throw new Error('JWT_KEY must be defined');
     }
 
-    if (!process.env.AUTH_MONGO_URI) {
-        throw new Error('AUTH_MONGO_URI must be defined');
+    if (!process.env.TICKETS_MONGO_URI) {
+        throw new Error('TICKETS_MONGO_URI must be defined');
     }
 
     try {
         mongoose.set('strictQuery', false);
-        await mongoose.connect(`${process.env.AUTH_MONGO_URI}?retryWrites=true&w=majority`);
+        await mongoose.connect(`${process.env.TICKETS_MONGO_URI}?retryWrites=true&w=majority`);
 
         console.log('DB online');
     } catch (err) {
