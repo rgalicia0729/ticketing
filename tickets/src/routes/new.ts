@@ -2,6 +2,8 @@ import { Router, Request, Response } from 'express';
 import { body } from 'express-validator';
 import { currentUser, requireAuth, validateRequest } from '@rg-ticketing/common';
 
+import { Ticket } from '../models/tickets';
+
 const router = Router();
 
 router.post(
@@ -9,12 +11,28 @@ router.post(
     currentUser,
     requireAuth,
     [
-        body('title').trim().not().isEmpty().withMessage('Title is required'),
-        body('price').isFloat({ gt: 0 }).withMessage('Price must be greater than 0')
+        body('title')
+            .trim()
+            .not()
+            .isEmpty()
+            .withMessage('Title is required'),
+        body('price')
+            .isFloat({ gt: 0 })
+            .withMessage('Price must be greater than 0')
     ],
     validateRequest,
-    (req: Request, res: Response) => {
-        res.status(200).json({});
+    async (req: Request, res: Response) => {
+        const { title, price } = req.body;
+
+        const ticket = Ticket.build({
+            title,
+            price,
+            userId: req.currentUser!.id
+        });
+
+        await ticket.save();
+
+        res.status(201).json(ticket);
     }
 );
 
