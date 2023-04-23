@@ -3,7 +3,7 @@ require('express-async-errors');
 import cookieSession from 'cookie-session';
 import { errorHandler, NotFoundError } from '@rg-ticketing/common';
 
-import { createTicketRouter, showTicketRouter } from './routes';
+import { listTicketRouter, showTicketRouter, createTicketRouter, updateTicketRouter } from './routes';
 
 const app = express();
 app.set('trust proxy', true);
@@ -17,8 +17,10 @@ app.use(
 );
 
 // Routes
-app.use(createTicketRouter);
+app.use(listTicketRouter);
 app.use(showTicketRouter);
+app.use(createTicketRouter);
+app.use(updateTicketRouter);
 
 app.all('*', () => {
     throw new NotFoundError();

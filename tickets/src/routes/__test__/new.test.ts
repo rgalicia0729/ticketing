@@ -1,7 +1,15 @@
 import request from 'supertest';
+import mongoose from 'mongoose';
 
 import { app } from '../../app';
 import { Ticket } from '../../models/tickets';
+
+const getCookie = () => {
+    const userId = new mongoose.Types.ObjectId().toHexString();
+    const userEmail = 'text@test.com';
+
+    return global.signup(userId, userEmail);
+}
 
 describe('Tests on POST /api/tickets', () => {
     it('Has a route handler listening to /api/tickets for post request', async () => {
@@ -22,7 +30,7 @@ describe('Tests on POST /api/tickets', () => {
     it('Returns a status other than 401 if the user is signed in', async () => {
         const response = await request(app)
             .post('/api/tickets')
-            .set('Cookie', global.signup())
+            .set('Cookie', getCookie())
             .send({});
 
         expect(response.status).not.toEqual(401);
@@ -31,7 +39,7 @@ describe('Tests on POST /api/tickets', () => {
     it('Return an error if an invalid title is provided', async () => {
         await request(app)
             .post('/api/tickets')
-            .set('Cookie', global.signup())
+            .set('Cookie', getCookie())
             .send({
                 title: '',
                 price: 10
@@ -40,7 +48,7 @@ describe('Tests on POST /api/tickets', () => {
 
         await request(app)
             .post('/api/tickets')
-            .set('Cookie', global.signup())
+            .set('Cookie', getCookie())
             .send({
                 price: 10
             })
@@ -50,7 +58,7 @@ describe('Tests on POST /api/tickets', () => {
     it('Return an error if an invalid price is provided', async () => {
         await request(app)
             .post('/api/tickets')
-            .set('Cookie', global.signup())
+            .set('Cookie', getCookie())
             .send({
                 title: 'New Ticket',
                 price: -5
@@ -59,7 +67,7 @@ describe('Tests on POST /api/tickets', () => {
 
         await request(app)
             .post('/api/tickets')
-            .set('Cookie', global.signup())
+            .set('Cookie', getCookie())
             .send({
                 title: 'New Ticket',
             })
@@ -75,7 +83,7 @@ describe('Tests on POST /api/tickets', () => {
 
         await request(app)
             .post('/api/tickets')
-            .set('Cookie', global.signup())
+            .set('Cookie', getCookie())
             .send({
                 title,
                 price
