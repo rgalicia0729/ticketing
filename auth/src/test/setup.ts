@@ -28,6 +28,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
+    console.log('Before All test');
     if (mongo) {
         await mongo.stop();
     }
