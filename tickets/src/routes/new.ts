@@ -3,6 +3,7 @@ import { body } from 'express-validator';
 import { currentUser, requireAuth, validateRequest } from '@rg-ticketing/common';
 
 import { TicketCreatedPublisher } from '../events/publisher/ticket-created-publisher';
+import { natsWrapper } from '../nats-wrapper';
 
 import { Ticket } from '../models/tickets';
 
@@ -34,7 +35,7 @@ router.post(
 
         await ticket.save();
 
-        await new TicketCreatedPublisher(client).publish({
+        await new TicketCreatedPublisher(natsWrapper.client).publish({
             id: ticket.id,
             title: ticket.title,
             price: ticket.price,

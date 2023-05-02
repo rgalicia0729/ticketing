@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 import { app } from './app';
+import { natsWrapper } from './nats-wrapper';
 
 const PORT = 3000;
 
@@ -15,6 +16,16 @@ const start = async () => {
     }
 
     try {
+        await natsWrapper.connect('ticketing', 'abc', 'http://nats-srv:4222');
+
+        natsWrapper.client.on('close', () => {
+            console.log('NATS connection closed!');
+            process.exit();
+        });
+
+        process.on('SIGINT', () => natsWrapper.client.close());
+        process.on('SIGTERM', () => natsWrapper.client.close());
+
         mongoose.set('strictQuery', false);
         await mongoose.connect(`${process.env.TICKETS_MONGO_URI}?retryWrites=true&w=majority`);
 
