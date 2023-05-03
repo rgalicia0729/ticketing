@@ -25,6 +25,14 @@ spec:
                   key: JWT_KEY
             - name: TICKETS_MONGO_URI
               value: "mongodb+srv://coursesusr:o2CtZBAFII5WRqtP@courses.6gjsk7h.mongodb.net/tickets"
+            - name: NATS_URL
+              value: "http://nats-srv:4222"
+            - name: NATS_CLUSTER_ID
+              value: ticketing
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
 ---
 apiVersion: v1
 kind: Service

@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 
 import { app } from '../../app';
 import { Ticket } from '../../models/tickets';
+import { natsWrapper } from '../../nats-wrapper';
 
 const getCookie = () => {
     const userId = new mongoose.Types.ObjectId().toHexString();
@@ -94,5 +95,21 @@ describe('Tests on POST /api/tickets', () => {
         expect(ticket.length).toEqual(1);
         expect(ticket[0].title).toEqual(title);
         expect(ticket[0].price).toEqual(price);
+    });
+
+    it('Publishes an event', async () => {
+        const title = 'New Ticket';
+        const price = 20;
+
+        await request(app)
+            .post('/api/tickets')
+            .set('Cookie', getCookie())
+            .send({
+                title,
+                price
+            })
+            .expect(201);
+
+        expect(natsWrapper.client.publish).toHaveBeenCalled();
     });
 });
