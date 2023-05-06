@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { body } from 'express-validator';
-import { requireAuth, validateRequest, NotFoundError, BadRequestError, OrderStatus } from '@rg-ticketing/common';
+import { currentUser, requireAuth, validateRequest, NotFoundError, BadRequestError, OrderStatus } from '@rg-ticketing/common';
 
 import { Order, Ticket } from '../models';
 
@@ -11,6 +11,7 @@ const EXPIRATION_WINDOW_SECONDS = 15 * 60;
 
 router.post(
     '/api/orders',
+    currentUser,
     requireAuth,
     [
         body('ticketId')
