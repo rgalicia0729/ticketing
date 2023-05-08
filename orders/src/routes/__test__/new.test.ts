@@ -4,6 +4,7 @@ import { OrderStatus } from '@rg-ticketing/common';
 
 import { app } from '../../app';
 import { Ticket, Order } from '../../models';
+import { natsWrapper } from '../../nats-wrapper';
 
 const getCookie = () => {
     const userId = new mongoose.Types.ObjectId().toHexString();
@@ -59,5 +60,21 @@ describe('Testing on POST /api/orders', () => {
             .set('Cookie', getCookie())
             .send({ ticketId: ticket.id })
             .expect(201);
+    });
+
+    it('Emits an order created event', async () => {
+        const ticket = Ticket.build({
+            title: 'Concert',
+            price: 30
+        });
+        await ticket.save();
+
+        await request(app)
+            .post('/api/orders')
+            .set('Cookie', getCookie())
+            .send({ ticketId: ticket.id })
+            .expect(201);
+
+        expect(natsWrapper.client.publish).toHaveBeenCalled();
     });
 });

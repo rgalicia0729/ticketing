@@ -4,6 +4,8 @@ import { body } from 'express-validator';
 import { currentUser, requireAuth, validateRequest, NotFoundError, BadRequestError, OrderStatus } from '@rg-ticketing/common';
 
 import { Order, Ticket } from '../models';
+import { OrderCreatedPublisher } from '../events/publisher/order-created-publisher';
+import { natsWrapper } from '../nats-wrapper';
 
 const router = Router();
 
@@ -55,6 +57,16 @@ router.post(
         await order.save();
 
         // Publish an event saying that and order was created
+        await new OrderCreatedPublisher(natsWrapper.client).publish({
+            id: order.id,
+            status: order.status,
+            userId: order.userId,
+            expiresAt: order.expiresAt.toISOString(),
+            ticket: {
+                id: ticket.id,
+                price: ticket.price
+            }
+        });
 
         res.status(201).json(order);
     }
