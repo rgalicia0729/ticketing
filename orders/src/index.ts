@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 import { app } from './app';
 import { natsWrapper } from './nats-wrapper';
+import { TicketCreatedListener, TicketUpdatedListener } from './events/listeners';
 
 const PORT = 3000;
 
@@ -41,6 +42,9 @@ const start = async () => {
 
         process.on('SIGINT', () => natsWrapper.client.close());
         process.on('SIGTERM', () => natsWrapper.client.close());
+
+        new TicketCreatedListener(natsWrapper.client).listen();
+        new TicketUpdatedListener(natsWrapper.client).listen();
 
         mongoose.set('strictQuery', false);
         await mongoose.connect(`${process.env.TICKETS_MONGO_URI}?retryWrites=true&w=majority`);
