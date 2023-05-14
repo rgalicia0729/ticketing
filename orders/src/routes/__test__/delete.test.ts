@@ -9,6 +9,7 @@ import { natsWrapper } from '../../nats-wrapper';
 describe('Testing on DELETE /api/orders/:id', () => {
     it('Marks an order as cancelled', async () => {
         const ticket = Ticket.build({
+            id: new mongoose.Types.ObjectId().toHexString(),
             title: 'Concert',
             price: 20
         });
@@ -35,6 +36,7 @@ describe('Testing on DELETE /api/orders/:id', () => {
 
     it('Emits a order cancelled event', async () => {
         const ticket = Ticket.build({
+            id: new mongoose.Types.ObjectId().toHexString(),
             title: 'Concert',
             price: 20
         });

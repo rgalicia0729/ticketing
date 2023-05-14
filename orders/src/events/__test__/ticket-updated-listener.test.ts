@@ -34,7 +34,7 @@ const setup = async () => {
 
 describe('Testing on ticket-updated-listener', () => {
     it('Finds, updates, and save a ticket', async () => {
-        const { msg, data, ticket, listener } = await setup();
+        const { msg, data, listener } = await setup();
 
         await listener.onMessage(data, msg);
 
@@ -53,5 +53,17 @@ describe('Testing on ticket-updated-listener', () => {
         await listener.onMessage(data, msg);
 
         expect(msg.ack).toHaveBeenCalled();
+    });
+
+    it('Does not call ack if the event has a skipped version number', async () => {
+        const { msg, data, listener } = await setup();
+
+        data.version = 10;
+
+        try {
+            await listener.onMessage(data, msg);
+        } catch (err) { }
+
+        expect(msg.ack).not.toHaveBeenCalled();
     });
 });
